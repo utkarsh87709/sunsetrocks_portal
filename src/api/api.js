@@ -1,0 +1,85 @@
+import axios from "axios";
+import Cookies from "js-cookie";
+
+// Axios instance
+const api = axios.create({
+  baseURL: "http://3.99.184.91:9003/v1/admin/", 
+  headers: {
+    "Content-Type": "application/json",
+  },
+});
+
+
+api.interceptors.request.use((config) => {
+  const token = Cookies.get("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// ----------- API Functions -----------
+
+// Login 
+
+
+
+export const login = async (email, password) => {
+  try {
+    // 🔹 Hardcoded check for test credentials
+    if (email === "utkarsh@gmail.com" && password === "12345678") {
+      const fakeResponse = {
+        meta: { status: true, message: "Login successful (mocked)" },
+        data: {
+          token: "fake-token-123456",
+          role: "admin",
+        },
+      };
+
+      // set cookies like normal
+      Cookies.set("token", fakeResponse.data.token, { expires: 7 });
+      Cookies.set("role", fakeResponse.data.role, { expires: 7 });
+
+      return fakeResponse;
+    }
+
+    // 🔹 Otherwise, call the real API
+    const res = await api.post("/login", { emailId: email, password });
+
+    if (res.data?.meta?.status && res.data?.data?.token) {
+      Cookies.set("token", res.data.data.token, { expires: 7 });
+      Cookies.set("role", res.data.data.role, { expires: 7 });
+      return res.data;
+    } else {
+      throw new Error(res.data?.meta?.message || "Login failed");
+    }
+  } catch (err) {
+    return {
+      meta: {
+        status: false,
+        message: err.message || "Something went wrong",
+      },
+      data: {},
+    };
+  }
+};
+
+
+// Logout
+export const logout = async () => {
+  try {
+    await api.post("/logout");
+  } catch (err) {
+    console.error("Logout API failed", err);
+  } finally {
+    Cookies.remove("token");
+    Cookies.remove("role");
+  }
+};
+
+// Generic POST (automatically adds token)
+export const post = async (url, data = {}) => {
+  const res = await api.post(url, data);
+  return res.data;
+};
+
