@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 // Axios instance
 const api = axios.create({
-  baseURL: "http://3.99.184.91:9003/v1/admin/", 
+  baseURL: "https://webbackend-sse-dev-cus-001.azurewebsites.net/v1/admin", 
   headers: {
     "Content-Type": "application/json",
   },
@@ -45,7 +45,7 @@ export const login = async (email, password) => {
     }
 
     // 🔹 Otherwise, call the real API
-    const res = await api.post("/login", { emailId: email, password });
+    const res = await axios.post("https://webbackend-sse-dev-cus-001.azurewebsites.net/v1/admin/login", { emailId: email, password });
 
     if (res.data?.meta?.status && res.data?.data?.token) {
       Cookies.set("token", res.data.data.token, { expires: 7 });
@@ -71,7 +71,7 @@ export const logout = async () => {
   try {
    Cookies.remove('token');
    Cookies.remove('role');
-   useNavigate('/')
+   useNavigate('/l')
   } catch (err) {
     console.error("Logout API failed", err);
   } finally {

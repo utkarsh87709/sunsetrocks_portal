@@ -263,7 +263,7 @@ export default function Layout() {
         <main className="flex-1 overflow-auto bg-gray-50">
           <div className="h-full p-4 lg:p-6">
           
-            <LoaderSkeleton/>
+          <Outlet/>
           </div>
         </main>
       </div>
