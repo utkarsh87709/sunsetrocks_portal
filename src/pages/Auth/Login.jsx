@@ -242,17 +242,7 @@ export default function Login() {
           </motion.form>
 
           {/* Sign Up Link */}
-          <div className="text-center pt-6 border-t border-gray-200">
-            <p className="text-sm sm:text-base text-gray-600">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-[#F9298C] hover:text-[#e0257e] font-medium transition-colors"
-              >
-                Sign up
-              </Link>
-            </p>
-          </div>
+        
         </motion.div>
       </AuthLayout>
     );

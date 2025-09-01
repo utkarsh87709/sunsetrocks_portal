@@ -10,8 +10,7 @@ import Events from "./pages/Events";
 import Configuration from "./pages/Configuration";
 import RegisteredUsers from "./pages/RegisteredUsers";
 
-// Layout
-import Layout from "./components/Layout"; // Update path if needed
+import Layout from "./components/common/Layout";
 
 function App() {
   const token = Cookies.get("token");
@@ -19,23 +18,20 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Public Routes */}
-        <Route path="/login" element={<Login />} />
+        {/* Public Routes (no Layout) */}
+        <Route path="/" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* Protected Routes with Layout */}
-        {token ? (
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="events" element={<Events />} />
-            <Route path="registered-users" element={<RegisteredUsers />} />
-            <Route path="config" element={<Configuration />} />
-          </Route>
-        ) : (
-          // Redirect to login if no token
-          <Route path="*" element={<Navigate to="/login" />} />
-        )}
+        {/* Protected Routes (with Layout) */}
+        <Route path="/dashboard" element={<Layout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="events" element={<Events />} />
+          <Route path="registered-users" element={<RegisteredUsers />} />
+          <Route path="config" element={<Configuration />} />
+        </Route>
+
+        {/* Catch-all → redirect */}
+        <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </Router>
   );

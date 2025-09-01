@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink, Outlet } from "react-router";
+import { logout } from "../../api/api";
 import { 
   HiOutlineMenu,
   HiOutlineX,
@@ -40,17 +41,17 @@ const NAVIGATION_ITEMS = [
     end: true
   },
   {
-    path: "/events",
+    path: "/dashboard/events",
     label: "Events",
     icon: Events
   },
   {
-    path: "/registered-users",
+    path: "/dashboard/registered-users",
     label: "Registered Users",
     icon: RegisteredUsers
   },
   {
-    path: "/config",
+    path: "/dashboard/config",
     label: "Configuration",
     icon: Configuration
   }
@@ -154,7 +155,7 @@ export default function Layout() {
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-2 sm:gap-4 lg:gap-7">
+        <div onClick={()=>logout()} className="flex items-center gap-2 sm:gap-4 lg:gap-7">
           <button className="hidden sm:flex rounded-xl lg:rounded-2xl px-3 lg:px-5 py-2 items-center gap-2 lg:gap-3.5 text-sm lg:text-base cursor-pointer hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             <HiOutlineQrcode className="w-5 h-5" />
             <span className="hidden md:inline">Scan QR Code</span>
@@ -166,7 +167,7 @@ export default function Layout() {
           </button>
 
           {/* User menu */}
-          <button className="flex items-center gap-1 lg:gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+          <button onClick={()=>logout()} className="flex items-center gap-1 lg:gap-2 p-2 hover:bg-gray-100 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
             <HiOutlineUser className="w-5 h-5" />
             <HiOutlineChevronDown className="w-4 h-4" />
           </button>

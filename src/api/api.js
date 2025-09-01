@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
 
 // Axios instance
 const api = axios.create({
@@ -68,7 +69,9 @@ export const login = async (email, password) => {
 // Logout
 export const logout = async () => {
   try {
-    await api.post("/logout");
+   Cookies.remove('token');
+   Cookies.remove('role');
+   useNavigate('/')
   } catch (err) {
     console.error("Logout API failed", err);
   } finally {
