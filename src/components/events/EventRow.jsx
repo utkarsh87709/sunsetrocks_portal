@@ -1,25 +1,30 @@
 import React from 'react';
 import { HiChevronDown, HiChevronRight } from 'react-icons/hi';
 import EventExpanded from './EventExpanded';
+import { VscEye } from "react-icons/vsc";
+import { FiEdit } from "react-icons/fi";
 
 const EventRow = ({
   event,
   isOpen,
   onToggleExpand,
-  onCopyEvent,
-  onViewEdit,
   onDownloadReports,
-  onCopyLink
+  onCopyLinkClick,
+  handleViewEvent,
+  handleEdit
 }) => {
-  const dateTime = new Date(event.eventStartDate).toLocaleString(undefined, {
+  // Extract date from eventStartDate
+  const eventDate = new Date(event.eventStartDate).toLocaleDateString(undefined, {
     dateStyle: 'medium',
-    timeStyle: 'short',
   });
 
+  // Use eventTime directly from the event object
+  const eventTime = event.eventTime;
+
   return (
-    <div className="py-2 my-3 border border-slate-300 rounded-xl bg-white">
+    <div className="py-4 my-3 border border-slate-300 rounded-xl bg-white hover:bg-[#FEEE95] pb-0 shadow-md">
       <div
-        className="grid grid-cols-2 sm:grid-cols-6 gap-4 items-center px-6 py-4 hover:bg-gray-50 transition cursor-pointer"
+        className="grid grid-cols-2 sm:grid-cols-6 gap-4 items-center px-6 py-4  transition cursor-pointer"
         onClick={() => onToggleExpand(event.eventId)}
       >
         <div className="flex items-center gap-2 col-span-1 sm:col-span-2">
@@ -28,30 +33,30 @@ const EventRow = ({
           ) : (
             <HiChevronRight className="w-5 h-5 text-gray-500" />
           )}
-          <span className="font-medium text-gray-900">{event.eventName}</span>
+          <span className="font-bold text-lg text-gray-900">{event.eventName}</span>
         </div>
 
-        <div>{dateTime}</div>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
+          <span className="text-sm font-bold">{eventDate}</span>
+          <span className="text-sm font-bold text-gray-800">{eventTime}</span>
+        </div>
         <div>{event.eventLocation}</div>
         <div className="font-mono">{event.eventCode}</div>
         <div className="flex flex-wrap gap-2">
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onCopyEvent(event.eventCode);
-            }}
-            className="text-xs border px-3 py-1.5 rounded hover:bg-gray-100"
+            onClick={() => handleViewEvent(event.eventId)}
+            className=" p-1 rounded-full bg-gray-100 border border-gray-200 hover:bg-white"
           >
-            Copy
+           <VscEye size={20} className=' ' />
           </button>
           <button
             onClick={(e) => {
               e.stopPropagation();
-              onViewEdit(event.eventId);
+             handleEdit(event.eventId);
             }}
-            className="text-xs border px-3 py-1.5 rounded hover:bg-gray-100"
+            className=" cursor-pointer flex items-center justify-center text-slate-600"
           >
-            View/Edit
+           <FiEdit className='mr-1' /> Edit
           </button>
         </div>
       </div>
@@ -60,7 +65,7 @@ const EventRow = ({
         <EventExpanded
           event={event}
           onDownloadReports={onDownloadReports}
-          onCopyLink={onCopyLink}
+          onCopyLink={onCopyLinkClick}
         />
       )}
     </div>

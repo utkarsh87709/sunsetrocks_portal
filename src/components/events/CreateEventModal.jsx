@@ -196,7 +196,7 @@ const CreateEventModal = ({ onClose, refresh }) => {
                   key={item[keyId]}
                   className={`px-3 py-2 cursor-pointer text-sm hover:bg-pink-50 ${
                     selectedValue === item[keyId] 
-                      ? 'bg-pink-100 text-pink-800 font-medium' 
+                      ? 'bg-orange-100 text-[#FF0808] font-medium' 
                       : 'text-gray-700'
                   }`}
                   onMouseDown={(e) => {
@@ -391,7 +391,7 @@ const CreateEventModal = ({ onClose, refresh }) => {
               type="submit"
               className={`px-4 py-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-pink-500 ${
                 isFormValid && !creating
-                  ? 'bg-pink-500 hover:bg-pink-600'
+                  ? 'bg-[#FF0808] hover:shadow-md'
                   : 'bg-gray-300 cursor-not-allowed'
               }`}
               disabled={!isFormValid || creating}

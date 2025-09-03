@@ -4,12 +4,11 @@ import { useNavigate } from "react-router-dom";
 
 // Axios instance
 const api = axios.create({
-  baseURL: "https://webbackend-sse-dev-cus-001.azurewebsites.net/v1/admin", 
+  baseURL: "https://webbackend-sse-dev-cus-001.azurewebsites.net/v1/admin",
   headers: {
     "Content-Type": "application/json",
   },
 });
-
 
 api.interceptors.request.use((config) => {
   const token = Cookies.get("token");
@@ -21,10 +20,7 @@ api.interceptors.request.use((config) => {
 
 // ----------- API Functions -----------
 
-// Login 
-
-
-
+// Login
 export const login = async (email, password) => {
   try {
     // 🔹 Hardcoded check for test credentials
@@ -65,13 +61,12 @@ export const login = async (email, password) => {
   }
 };
 
-
 // Logout
 export const logout = async () => {
   try {
-   Cookies.remove('token');
-   Cookies.remove('role');
-   useNavigate('/l')
+    Cookies.remove('token');
+    Cookies.remove('role');
+    useNavigate('/l')
   } catch (err) {
     console.error("Logout API failed", err);
   } finally {
@@ -86,3 +81,10 @@ export const post = async (url, data = {}) => {
   return res.data;
 };
 
+// Blob POST for file downloads
+export const blobpost = async (url, data = {}) => {
+  const res = await api.post(url, data, {
+    responseType: 'blob'
+  });
+  return res;
+};

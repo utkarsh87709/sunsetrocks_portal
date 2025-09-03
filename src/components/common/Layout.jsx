@@ -219,7 +219,7 @@ export default function Layout() {
                         focus:ring-offset-2
                       ${(!isMobile && isDesktopSidebarCollapsed) ? 'justify-center' : 'gap-3 lg:gap-4'}
                       ${isActive 
-                        ? 'bg-yellow-300 lg:bg-transparent font-bold text-pink-600' 
+                        ? 'bg-yellow-300 lg:bg-transparent font-bold text-[#FF0808]' 
                         : 'text-gray-900 hover:text-gray-700'
                       }
                     `}
@@ -246,7 +246,7 @@ export default function Layout() {
             <div className="px-4">
               <button
                 onClick={toggleSidebar}
-                className="ml-auto flex items-center justify-center w-10 h-10 rounded-lg bg-black/10 hover:bg-black/20 transition-colors focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-yellow-200"
+                className="ml-auto flex items-center justify-center w-10 h-10 rounded-lg bg-black/10 hover:bg-black/20 transition-colors focus:outline-none focus:ring-2 focus:ring-[#FF0808] focus:ring-offset-2 focus:ring-offset-yellow-200"
                 aria-label={isDesktopSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               >
                 {isDesktopSidebarCollapsed ? (

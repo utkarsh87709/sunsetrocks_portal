@@ -4,6 +4,8 @@ import EventRow from './EventRow';
 import CreateEventModal from './CreateEventModal';
 import { post } from '../../api/api';
 import CopyLinkModal from './CopyLinkModal';
+import EditEventModal from './EditEventModal';
+import ViewEventModal from './ViewEventModal';
 const Events = () => {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [eventsData, setEventsData] = useState([]);
@@ -11,6 +13,9 @@ const Events = () => {
   const [error, setError] = useState(null);
   const [expandedEventId, setExpandedEventId] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [link,setLink]=useState("");
+  const [eventDetails,setEventDetails]=useState(null);
+  const [selectedEvent,setSelectedEvent]=useState(null)
 
   const fetchEvents = async (status = activeTab) => {
     setLoading(true);
@@ -34,6 +39,21 @@ const Events = () => {
       setLoading(false);
     }
   };
+  const handleEdit=(eventId)=>{
+    setSelectedEvent(eventId);
+    setShowModal('edit');
+  }
+
+
+
+  const handleViewEvent= (eventId)=>{
+   setSelectedEvent(eventId);
+
+   setShowModal('view');
+  
+  
+   
+  }
 
   useEffect(() => {
     fetchEvents(activeTab);
@@ -49,7 +69,7 @@ const Events = () => {
   const handleCopyLink = (eventId) => console.log('Copy link for:', eventId);
 
   return (
-    <div className="w-full">
+    <div className="w-full  p-4 md:p-6 lg:p-8">
       <EventsHeader
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -83,7 +103,11 @@ const Events = () => {
               onDownloadReports={handleDownloadReports}
               onCopyLink={handleCopyLink}
               onClose={_=>setShowModal(false)}
-              onCopyLinkClick={_=>setShowModal('copyLink')}
+              onCopyLinkClick={(link)=>{setLink(link);setShowModal('copyLink')}}
+              setShowModal={setShowModal}
+              handleViewEvent={handleViewEvent}
+              handleEdit={handleEdit}
+
             />
           ))}
         </>
@@ -97,7 +121,24 @@ const Events = () => {
       )}
         {showModal=='copyLink' && (
         <CopyLinkModal
+          link={link}
+          onClose={() =>{setLink("");setShowModal(false)}}
+        />
+      )}
+        {showModal=='edit' && (
+        <EditEventModal
           onClose={() => setShowModal(false)}
+          eventId={selectedEvent}
+          refresh={fetchEvents}
+        />
+      )}
+        {showModal=='view' && (
+        <ViewEventModal
+        eventDetails={eventDetails}
+        selectedEvent={selectedEvent}
+        setShowModal={setShowModal}
+        handleEdit={handleEdit}
+          onClose={() =>{setShowModal(false);setEventDetails(null)} }
         />
       )}
     </div>
