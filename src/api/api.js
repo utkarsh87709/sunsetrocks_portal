@@ -63,10 +63,12 @@ export const login = async (email, password) => {
 
 // Logout
 export const logout = async () => {
+  const navigate=useNavigate()
   try {
+
     Cookies.remove('token');
     Cookies.remove('role');
-    useNavigate('/l')
+    navigate('/')
   } catch (err) {
     console.error("Logout API failed", err);
   } finally {

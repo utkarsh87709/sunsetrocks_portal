@@ -1,93 +1,48 @@
 import React, { useEffect, useState } from 'react';
 import { Plus } from 'lucide-react';
-
-// Mock API function for demo purposes
-const post = async (endpoint, data) => {
-  // Simulating API response
-  return {
-    meta: { status: true },
-    data: {
-      userTypeList: [
-        {
-          userTypeId: 1,
-          userTypeName: "VIP",
-          userTypeDescription: "All the user under VIP comes under here.",
-          categoryList: [
-            {
-              categoryId: 1,
-              categoryName: "Blue",
-              badgeUrl: "https://webbackend-sse-dev-cus-001.azurewebsites.net/uploads/sunset-rocks-badges-back.png",
-              xCoordinate: 435,
-              yCoordinate: 708,
-              qrHeight: 157,
-              qrWidth: 157
-            },
-            {
-              categoryId: 4,
-              categoryName: "Gold",
-              badgeUrl: "https://webbackend-sse-dev-cus-001.azurewebsites.net/uploads/sunset-rocks-badges-back.png",
-              xCoordinate: 435,
-              yCoordinate: 708,
-              qrHeight: 157,
-              qrWidth: 157
-            }
-          ]
-        },
-        {
-          userTypeId: 3,
-          userTypeName: "Regular",
-          userTypeDescription: "All the user under Regular comes under here.",
-          categoryList: [
-            {
-              categoryId: 3,
-              categoryName: "Red",
-              badgeUrl: "https://webbackend-sse-dev-cus-001.azurewebsites.net/uploads/sunset-rocks-badges-back.png",
-              xCoordinate: 435,
-              yCoordinate: 708,
-              qrHeight: 157,
-              qrWidth: 157
-            }
-          ]
-        }
-      ]
-    }
-  };
-};
+import { post } from '../api/api';
+import AddUserTypeModal from '../components/configuration/AddUserTypeModal';
+import DeleteUserTypeModal from '../components/configuration/DeleteUserTypeModal';
+import CreateBadgeCategoryModal from '../components/configuration/CreateBadgeCategoryModal';
+import DeleteBadgeCategoryModal from '../components/configuration/DeleteBadgeCategoryModal';
 
 const Configuration = () => {
-  const [selectedUserType, setSelectedUserType] = useState('VIP');
+  const [selectedUserType, setSelectedUserType] = useState(null);
+  const [selectedUserTypeId, setSelectedUserTypeId] = useState(null);
   const [userTypes, setUserTypes] = useState([]);
   const [badgeCategories, setBadgeCategories] = useState([]);
-  const [apiData, setApiData] = useState(null); // Store the full API response
+  const [apiData, setApiData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(null);
 
   const getAllUserType = async () => {
     try {
       const response = await post('/getAllUserType', {});
       console.log(response);
-      
+
       if (response.meta.status && response.data.userTypeList) {
-        // Store the full API response
+        const userTypeList = response.data.userTypeList;
+
         setApiData(response.data);
-        
-        // Set user types from API response
-        const apiUserTypes = response.data.userTypeList.map(userType => ({
+
+        const formattedUserTypes = userTypeList.map(userType => ({
           id: userType.userTypeId,
           name: userType.userTypeName,
-          description: userType.userTypeDescription,
-          active: userType.userTypeName === 'VIP' // Set VIP as active by default
+          description: userType.userTypeDescription
         }));
-        
-        setUserTypes(apiUserTypes);
-        
-        // Set badge categories for the initially selected user type
-        const initialUserType = response.data.userTypeList.find(type => type.userTypeName === 'VIP');
-        if (initialUserType) {
-          setBadgeCategories(initialUserType.categoryList || []);
+
+        setUserTypes(formattedUserTypes);
+
+        // Set first userType as default selected
+        if (userTypeList.length > 0) {
+          const initial = userTypeList[0];
+          setSelectedUserType(initial.userTypeName);
+          setSelectedUserTypeId(initial.userTypeId);
+          setBadgeCategories(initial.categoryList || []);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error('Error fetching user types:', error);
     } finally {
       setLoading(false);
     }
@@ -99,11 +54,13 @@ const Configuration = () => {
 
   const handleUserTypeClick = (userTypeName) => {
     setSelectedUserType(userTypeName);
-    
-    // Update badge categories based on selected user type using stored API data
+
     if (apiData) {
-      const selectedType = apiData.userTypeList.find(type => type.userTypeName === userTypeName);
+      const selectedType = apiData.userTypeList.find(
+        type => type.userTypeName === userTypeName
+      );
       if (selectedType) {
+        setSelectedUserTypeId(selectedType.userTypeId);
         setBadgeCategories(selectedType.categoryList || []);
       }
     }
@@ -117,16 +74,12 @@ const Configuration = () => {
     console.log('Delete clicked for:', category);
   };
 
-  const handleAddNewUserType = () => {
-    console.log('Add new user type clicked');
-  };
-
-  const handleDeleteUserType = () => {
-    console.log('Delete user type clicked');
-  };
-
   const handleAddBadgeCategory = () => {
-    console.log('Add badge category clicked');
+    setShowModal('addBadge');
+  };
+
+  const handleDeleteBadgeCategory = () => {
+    setShowModal('deleteBadge');
   };
 
   if (loading) {
@@ -145,18 +98,18 @@ const Configuration = () => {
           <h1 className="text-3xl lg:text-4xl font-bold text-black mb-4 sm:mb-0">
             Configuration
           </h1>
-          
+
           <div className="flex flex-col sm:flex-row gap-3">
-            <button 
-              onClick={handleAddNewUserType}
+            <button
+              onClick={() => setShowModal('addUser')}
               className="flex items-center justify-center px-6 py-3 border-2 border-green-500 text-green-600 rounded-full hover:bg-green-50 transition-colors font-medium"
             >
               <Plus size={20} className="mr-2" />
               Add New User Type
             </button>
-            
-            <button 
-              onClick={handleDeleteUserType}
+
+            <button
+              onClick={() => setShowModal('delUser')}
               className="flex items-center justify-center px-6 py-3 border-2 border-red-500 text-red-600 rounded-full hover:bg-red-50 transition-colors font-medium"
             >
               <Plus size={20} className="mr-2 rotate-45" />
@@ -176,8 +129,11 @@ const Configuration = () => {
                   ? 'bg-red-600 text-white border-red-600'
                   : 'bg-white text-red-600 border-red-600 hover:bg-red-50'
               } ${
-                index === 0 ? 'rounded-l-lg' : 
-                index === userTypes.length - 1 ? 'rounded-r-lg' : ''
+                index === 0
+                  ? 'rounded-l-lg'
+                  : index === userTypes.length - 1
+                  ? 'rounded-r-lg'
+                  : ''
               }`}
             >
               {userType.name}
@@ -185,15 +141,25 @@ const Configuration = () => {
           ))}
         </div>
 
-        {/* Add Badge Category Button */}
-        <div className="flex justify-end mb-6">
+        {/* Badge Category Action Buttons */}
+        <div className="flex justify-end gap-4 mb-6">
           <button
             onClick={handleAddBadgeCategory}
             className="flex items-center px-6 py-3 bg-white border-2 border-dashed border-gray-300 rounded-lg hover:border-gray-400 transition-colors shadow-sm"
           >
             <Plus size={20} className="mr-2 text-gray-400" />
-            <span className="text-gray-600 font-medium">Add Badge category</span>
+            <span className="text-gray-600 font-medium">Add Badge Category</span>
           </button>
+
+          {badgeCategories.length > 0 && (
+            <button
+              onClick={handleDeleteBadgeCategory}
+              className="flex items-center px-6 py-3 bg-white border-2 border-dashed border-red-300 rounded-lg hover:border-red-400 transition-colors shadow-sm"
+            >
+              <Plus size={20} className="mr-2 text-red-400 rotate-45" />
+              <span className="text-red-600 font-medium">Delete Badge Category</span>
+            </button>
+          )}
         </div>
 
         {/* Main Content Area */}
@@ -202,16 +168,19 @@ const Configuration = () => {
           <div className="mb-8">
             <h3 className="text-gray-500 font-medium mb-4">Description</h3>
             <p className="text-gray-800 leading-relaxed">
-              {userTypes.find(type => type.name === selectedUserType)?.description || 
-               "Lorem ipsum dolor sit amet consectetur. Purus euismod turpis feugiat nisl tortor amet sit. Iaculis leo nisl volutpat mattis aliquam at in. Eu pulvinar nec enim fermentum vestibulum dolor turpis convallis."}
+              {userTypes.find(type => type.name === selectedUserType)?.description ||
+                'No description available for this user type.'}
             </p>
           </div>
 
           {/* Badge Categories Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {badgeCategories.length > 0 ? (
-              badgeCategories.map((category) => (
-                <div key={category.categoryId} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+              badgeCategories.map(category => (
+                <div
+                  key={category.categoryId}
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg"
+                >
                   <h3 className="text-xl font-semibold text-black">
                     {category.categoryName}
                   </h3>
@@ -222,12 +191,12 @@ const Configuration = () => {
                     >
                       Edit
                     </button>
-                    <button
+                    {/* <button
                       onClick={() => handleDelete(category)}
                       className="px-6 py-2 bg-gray-200 text-gray-700 rounded-full hover:bg-gray-300 transition-colors font-medium text-sm"
                     >
                       Delete
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               ))
@@ -239,6 +208,32 @@ const Configuration = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      {showModal === 'addUser' && (
+        <AddUserTypeModal onClose={() => setShowModal(null)} refresh={getAllUserType} />
+      )}
+      {showModal === 'delUser' && (
+        <DeleteUserTypeModal
+          userTypes={userTypes}
+          onClose={() => setShowModal(null)}
+          refresh={getAllUserType}
+        />
+      )}
+      {showModal === 'addBadge' && (
+        <CreateBadgeCategoryModal
+          selectedUserTypeId={selectedUserTypeId}
+          onClose={() => setShowModal(null)}
+          refresh={getAllUserType}
+        />
+      )}
+      {showModal === 'deleteBadge' && (
+        <DeleteBadgeCategoryModal
+          badgeCategories={badgeCategories}
+          onClose={() => setShowModal(null)}
+          refresh={getAllUserType}
+        />
+      )}
     </div>
   );
 };

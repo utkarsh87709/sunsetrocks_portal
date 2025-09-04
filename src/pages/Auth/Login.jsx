@@ -82,6 +82,7 @@ export default function Login() {
         if (res?.meta?.status && res?.data?.token) {
           // ✅ Save token + role in cookies
           Cookies.set("token", res.data.token, { expires: 7 });
+           Cookies.set("email", email, { expires: 7 });
           Cookies.set("role", res.data.role || "user", { expires: 7 });
 
           navigate("/dashboard");
