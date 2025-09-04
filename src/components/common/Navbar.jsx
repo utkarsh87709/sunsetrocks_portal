@@ -2,7 +2,7 @@
 import { FaQrcode, FaUserCircle, FaSignOutAlt, FaChevronDown, FaBars, FaTimes } from 'react-icons/fa';
 import { MdDashboard, MdEvent, MdPeople, MdSettings } from 'react-icons/md';
 import { useState } from 'react';
-import Logo from '../../assets/logo_app.png'
+import Logo from '../../assets/logo.svg'
 
 // Navbar Component
 const Navbar = ({ toggleSidebar, isSidebarOpen }) => {
